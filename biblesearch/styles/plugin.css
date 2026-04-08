@@ -1,0 +1,98 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+}
+
+.wrap { padding: 16px; }
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.logo svg { flex-shrink: 0; }
+
+.logo h1 { font-size: 15px; font-weight: 600; color: #1a73e8; }
+.logo p  { font-size: 11px; color: #888; margin-top: 2px; }
+
+h2 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.section { margin-bottom: 22px; }
+
+.examples { list-style: none; }
+.examples li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+}
+.examples li:last-child { border-bottom: none; }
+
+.examples code {
+    background: #eef4ff;
+    color: #1a73e8;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    white-space: nowrap;
+}
+.examples span { color: #777; }
+
+label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #333;
+    background: #fafafa;
+    margin-bottom: 12px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 24px;
+}
+
+select:focus { outline: none; border-color: #1a73e8; background-color: #fff; }
+
+button.save {
+    width: 100%;
+    padding: 8px;
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+button.save:hover { background: #1558b0; }
+
+.saved { font-size: 11px; color: #34a853; margin-top: 6px; min-height: 16px; }
