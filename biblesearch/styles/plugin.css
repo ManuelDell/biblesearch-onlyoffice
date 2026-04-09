@@ -1,2 +1,1 @@
-/* Fallback: body immer sichtbar */
-body { display: block !important; visibility: visible !important; }
+html, body { display:block !important; visibility:visible !important; }
