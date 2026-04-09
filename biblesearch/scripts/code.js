@@ -236,89 +236,85 @@
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
-        // UI dynamisch rendern – OnlyOffice kann bei panelRight/panel den
-        // Body ersetzen; durch Rendern in init() überschreiben wir das.
-        document.body.innerHTML = [
-            '<style>',
-            '.bs-section{margin-bottom:12px}',
-            '.bs-label{display:block;font-weight:bold;margin-bottom:4px}',
-            'select.form-control{width:100%;margin-bottom:8px}',
-            '.bs-saved{color:green;font-size:10px;margin-left:6px}',
-            '.bs-examples{font-size:10px;line-height:1.8}',
-            '.bs-examples b{font-family:monospace;background:#eef;padding:0 3px;border-radius:2px}',
-            '</style>',
-            '<div class="bs-section">',
-            '  <label class="defaultlable">',
-            '    <input type="checkbox" id="enabled" style="margin-right:6px;">',
-            '    Inline-Einfügung aktiv',
-            '  </label>',
-            '  <div id="toggleSub" class="defaultlable" style="color:#aaa;margin-top:2px;font-size:10px;">Deaktiviert</div>',
-            '</div>',
-            '<div class="separator horizontal"></div>',
-            '<div class="bs-section" style="margin-top:10px;">',
-            '  <span class="defaultlable bs-label">Bibelübersetzung</span>',
-            '  <select id="trl" class="form-control">',
-            '    <option value="delut">Luther 1912 (Deutsch)</option>',
-            '    <option value="elb1905">Elberfelder 1905 (Deutsch)</option>',
-            '    <option value="kjv">King James Version (Englisch)</option>',
-            '    <option value="web">World English Bible (Englisch)</option>',
-            '  </select>',
-            '  <span class="defaultlable bs-label">Versformat</span>',
-            '  <select id="linebreaks" class="form-control">',
-            '    <option value="prose">Fließtext</option>',
-            '    <option value="lines">Jeder Vers eigene Zeile</option>',
-            '  </select>',
-            '  <span class="defaultlable bs-label">Ausgabe</span>',
-            '  <select id="fmt" class="form-control">',
-            '    <option value="with_ref">Text + Bibelstelle</option>',
-            '    <option value="text_only">Nur Text</option>',
-            '    <option value="with_source">Text + Stelle + Übersetzung</option>',
-            '  </select>',
-            '  <button id="saveBtn" class="btn-text-default">Speichern</button>',
-            '  <span id="savedMsg" class="bs-saved"></span>',
-            '</div>',
-            '<div class="separator horizontal"></div>',
-            '<div class="bs-section" style="margin-top:10px;">',
-            '  <span class="defaultlable bs-label">Beispiele</span>',
-            '  <div class="bs-examples defaultlable">',
-            '    <b>@Joh3:16</b> Einzelner Vers<br>',
-            '    <b>@1Mo1:1-3</b> Versbereich<br>',
-            '    <b>@Ps23</b> Ganzes Kapitel<br>',
-            '    Tippen \u2192 Dropdown \u2192 <b>Tab</b>',
-            '  </div>',
-            '</div>'
-        ].join('\n');
+        // Falls OnlyOffice den Body durch ih_main ersetzt hat,
+        // UI dynamisch neu rendern und Event-Listener binden.
+        if (!document.getElementById('bs-root')) {
+            document.body.style.cssText = 'width:100%;height:100%;margin:0;padding:8px;overflow:auto;';
+            document.body.innerHTML = [
+                '<div id="bs-root">',
+                '<div class="bs-section">',
+                '  <label class="defaultlable">',
+                '    <input type="checkbox" id="enabled" style="margin-right:6px;">',
+                '    Inline-Einfügung aktiv',
+                '  </label>',
+                '  <div id="toggleSub" class="defaultlable" style="color:#aaa;margin-top:2px;font-size:10px;">Deaktiviert</div>',
+                '</div>',
+                '<div class="separator horizontal"></div>',
+                '<div class="bs-section" style="margin-top:10px;">',
+                '  <span class="defaultlable bs-label">Bibelübersetzung</span>',
+                '  <select id="trl" class="form-control">',
+                '    <option value="delut">Luther 1912 (Deutsch)</option>',
+                '    <option value="elb1905">Elberfelder 1905 (Deutsch)</option>',
+                '    <option value="kjv">King James Version (Englisch)</option>',
+                '    <option value="web">World English Bible (Englisch)</option>',
+                '  </select>',
+                '  <span class="defaultlable bs-label">Versformat</span>',
+                '  <select id="linebreaks" class="form-control">',
+                '    <option value="prose">Fließtext</option>',
+                '    <option value="lines">Jeder Vers eigene Zeile</option>',
+                '  </select>',
+                '  <span class="defaultlable bs-label">Ausgabe</span>',
+                '  <select id="fmt" class="form-control">',
+                '    <option value="with_ref">Text + Bibelstelle</option>',
+                '    <option value="text_only">Nur Text</option>',
+                '    <option value="with_source">Text + Stelle + Übersetzung</option>',
+                '  </select>',
+                '  <button id="saveBtn" class="btn-text-default">Speichern</button>',
+                '  <span id="savedMsg" style="color:green;font-size:10px;margin-left:6px;"></span>',
+                '</div>',
+                '<div class="separator horizontal"></div>',
+                '<div class="bs-section" style="margin-top:10px;">',
+                '  <span class="defaultlable bs-label">Beispiele</span>',
+                '  <div class="defaultlable" style="font-size:10px;line-height:1.8">',
+                '    <b>@Joh3:16</b> Einzelner Vers<br>',
+                '    <b>@1Mo1:1-3</b> Versbereich<br>',
+                '    <b>@Ps23</b> Ganzes Kapitel<br>',
+                '    Tippen \u2192 Dropdown \u2192 <b>Tab</b>',
+                '  </div>',
+                '</div>',
+                '</div>'
+            ].join('\n');
 
-        // Einstellungen laden und Events binden
-        var enabledEl = document.getElementById('enabled');
-        var toggleSub = document.getElementById('toggleSub');
-        var trlEl     = document.getElementById('trl');
-        var lbEl      = document.getElementById('linebreaks');
-        var fmtEl     = document.getElementById('fmt');
-        var saveBtn   = document.getElementById('saveBtn');
-        var savedMsg  = document.getElementById('savedMsg');
+            // Settings binden (nur nötig wenn HTML neu gerendert wurde)
+            var enabledEl = document.getElementById('enabled');
+            var toggleSub = document.getElementById('toggleSub');
+            var trlEl     = document.getElementById('trl');
+            var lbEl      = document.getElementById('linebreaks');
+            var fmtEl     = document.getElementById('fmt');
+            var saveBtn   = document.getElementById('saveBtn');
+            var savedMsg  = document.getElementById('savedMsg');
 
-        var on = localStorage.getItem('bs_enabled') === '1';
-        enabledEl.checked = on;
-        toggleSub.textContent = on ? 'Aktiviert' : 'Deaktiviert';
-        trlEl.value = localStorage.getItem('bs_translation') || 'delut';
-        lbEl.value  = localStorage.getItem('bs_linebreaks')  || 'prose';
-        fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
+            var on = localStorage.getItem('bs_enabled') === '1';
+            enabledEl.checked = on;
+            toggleSub.textContent = on ? 'Aktiviert' : 'Deaktiviert';
+            trlEl.value = localStorage.getItem('bs_translation') || 'delut';
+            lbEl.value  = localStorage.getItem('bs_linebreaks')  || 'prose';
+            fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
 
-        enabledEl.addEventListener('change', function () {
-            localStorage.setItem('bs_enabled', this.checked ? '1' : '0');
-            toggleSub.textContent = this.checked ? 'Aktiviert' : 'Deaktiviert';
-        });
+            enabledEl.addEventListener('change', function () {
+                localStorage.setItem('bs_enabled', this.checked ? '1' : '0');
+                toggleSub.textContent = this.checked ? 'Aktiviert' : 'Deaktiviert';
+            });
+            saveBtn.addEventListener('click', function () {
+                localStorage.setItem('bs_translation', trlEl.value);
+                localStorage.setItem('bs_linebreaks',  lbEl.value);
+                localStorage.setItem('bs_format',      fmtEl.value);
+                savedMsg.textContent = '\u2713 Gespeichert';
+                setTimeout(function () { savedMsg.textContent = ''; }, 2000);
+            });
+        }
 
-        saveBtn.addEventListener('click', function () {
-            localStorage.setItem('bs_translation', trlEl.value);
-            localStorage.setItem('bs_linebreaks',  lbEl.value);
-            localStorage.setItem('bs_format',      fmtEl.value);
-            savedMsg.textContent = '\u2713 Gespeichert';
-            setTimeout(function () { savedMsg.textContent = ''; }, 2000);
-        });
-
-        // InputHelper einmalig initialisieren
+        // InputHelper einmalig initialisieren (braucht fertigen SDK)
         if (!window._bsReady) {
             window._bsReady = true;
             try {
