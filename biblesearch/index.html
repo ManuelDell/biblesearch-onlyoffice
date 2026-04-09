@@ -114,7 +114,19 @@
 
 </div>
 
+<!-- plugins.js setzt body{visibility:hidden} per JS-Inline-Style.
+     Dieses Script überschreibt das vor UND nach dem Laden. -->
+<script>
+  document.body.style.setProperty('visibility', 'visible', 'important');
+</script>
+
 <script src="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.js"></script>
+
+<!-- Nochmals sicherstellen, nachdem plugins.js evtl. wieder versteckt hat -->
+<script>
+  document.body.style.setProperty('visibility', 'visible', 'important');
+</script>
+
 <script src="scripts/code.js"></script>
 <script>
 (function () {

@@ -231,6 +231,11 @@
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
+        // Body per JS sichtbar machen – plugins.js kann Inline-Style mit
+        // visibility:hidden!important setzen, den nur JS wieder aufheben kann.
+        document.body.style.setProperty('visibility', 'visible', 'important');
+
+        // Fenstergröße (bei panelRight ignoriert, schadet aber nicht)
         window.Asc.plugin.resizeWindow(260, 500, 220, 380, 480, 900);
 
         if (!window._bsReady) {
