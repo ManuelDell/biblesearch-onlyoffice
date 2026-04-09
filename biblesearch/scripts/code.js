@@ -3,8 +3,13 @@
  * Aktivierung: Plugin-Panel öffnen → Toggle einschalten.
  * API: https://api.getbible.net/v2/{übersetzung}/{buch}/{kapitel}.json
  */
-(function () {
+(function (window, undefined) {
     'use strict';
+
+    // Defensiv: sicherstellen dass Asc.plugin existiert,
+    // auch falls plugins.js noch nicht geladen ist
+    window.Asc         = window.Asc         || {};
+    window.Asc.plugin  = window.Asc.plugin  || {};
 
     // ── Bücher: Kürzel → Nummer 1–66 ──────────────────────────────────────
     const BOOKS = {
@@ -233,8 +238,10 @@
     window.Asc.plugin.init = function () {
         if (!window._bsReady) {
             window._bsReady = true;
-            window.Asc.plugin.createInputHelper();
-            window.Asc.plugin.getInputHelper().createWindow();
+            try {
+                window.Asc.plugin.createInputHelper();
+                window.Asc.plugin.getInputHelper().createWindow();
+            } catch (e) { /* InputHelper nicht verfügbar – kein Fehler */ }
         }
     };
 
@@ -271,4 +278,4 @@
         });
     };
 
-}());
+}(window, undefined));
