@@ -231,21 +231,10 @@
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
-        document.body.style.setProperty('display', 'block', 'important');
-        document.body.style.setProperty('visibility', 'visible', 'important');
-
-        try {
-            window.Asc.plugin.resizeWindow(260, 500, 220, 380, 480, 900);
-        } catch (e) {}
-
         if (!window._bsReady) {
             window._bsReady = true;
-            try {
-                window.Asc.plugin.createInputHelper();
-                window.Asc.plugin.getInputHelper().createWindow();
-            } catch (e) {
-                // InputHelper nicht verfügbar in diesem Modus – kein Fehler
-            }
+            window.Asc.plugin.createInputHelper();
+            window.Asc.plugin.getInputHelper().createWindow();
         }
     };
 
