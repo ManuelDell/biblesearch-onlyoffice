@@ -1,17 +1,13 @@
 {
   "name": "BibleSearch",
-  "nameLocale": { "de": "BibelSuche" },
   "guid": "asc.{3F9E2E20-BCE5-4B0F-9E2C-7A5B9D3E1F44}",
-  "baseUrl": "",
   "variations": [
     {
       "description": "Bibelverse per @Referenz inline einfügen",
-      "descriptionLocale": { "de": "Bibelverse per @Referenz inline einfügen" },
       "url": "index.html",
       "icons": ["resources/img/icon.png", "resources/img/icon@2x.png"],
       "isViewer": false,
       "EditorsSupport": ["word"],
-      "type": "panel",
       "isVisual": true,
       "isModal": false,
       "isInsideMode": true,
