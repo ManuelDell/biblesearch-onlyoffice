@@ -236,12 +236,23 @@
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
-        // Falls OnlyOffice den Body durch ih_main ersetzt hat,
-        // UI dynamisch neu rendern und Event-Listener binden.
+        // 1. InputHelper ZUERST – createWindow() vom Desktop-Host kann den
+        //    Body mit ih_area überschreiben; das muss vor unserem UI passieren.
+        if (!window._bsReady) {
+            window._bsReady = true;
+            try {
+                window.Asc.plugin.createInputHelper();
+                window.Asc.plugin.getInputHelper().createWindow();
+            } catch (e) { /* InputHelper nicht verfügbar – kein Fehler */ }
+        }
+
+        // 2. UI NACH createWindow() einfügen (createElement + insertBefore,
+        //    nicht innerHTML – so bleibt ih_area erhalten).
         if (!document.getElementById('bs-root')) {
-            document.body.style.cssText = 'width:100%;height:100%;margin:0;padding:8px;overflow:auto;';
-            document.body.innerHTML = [
-                '<div id="bs-root">',
+            var root = document.createElement('div');
+            root.id = 'bs-root';
+            root.style.cssText = 'padding:8px;';
+            root.innerHTML = [
                 '<div class="bs-section">',
                 '  <label class="defaultlable">',
                 '    <input type="checkbox" id="enabled" style="margin-right:6px;">',
@@ -281,11 +292,13 @@
                 '    <b>@Ps23</b> Ganzes Kapitel<br>',
                 '    Tippen \u2192 Dropdown \u2192 <b>Tab</b>',
                 '  </div>',
-                '</div>',
                 '</div>'
             ].join('\n');
 
-            // Settings binden (nur nötig wenn HTML neu gerendert wurde)
+            // Vor ih_area einfügen (oder ans Ende – je nachdem was existiert)
+            document.body.insertBefore(root, document.body.firstChild);
+
+            // Settings binden
             var enabledEl = document.getElementById('enabled');
             var toggleSub = document.getElementById('toggleSub');
             var trlEl     = document.getElementById('trl');
@@ -312,15 +325,6 @@
                 savedMsg.textContent = '\u2713 Gespeichert';
                 setTimeout(function () { savedMsg.textContent = ''; }, 2000);
             });
-        }
-
-        // InputHelper einmalig initialisieren (braucht fertigen SDK)
-        if (!window._bsReady) {
-            window._bsReady = true;
-            try {
-                window.Asc.plugin.createInputHelper();
-                window.Asc.plugin.getInputHelper().createWindow();
-            } catch (e) { /* InputHelper nicht verfügbar – kein Fehler */ }
         }
     };
 
