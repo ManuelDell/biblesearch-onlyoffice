@@ -51,16 +51,23 @@
 <body>
 
 <script>
-// MutationObserver: kämpft aktiv gegen jede Sichtbarkeits-Manipulation
 (function () {
   function forceVisible() {
-    document.documentElement.style.setProperty('display', 'block', 'important');
-    document.documentElement.style.setProperty('visibility', 'visible', 'important');
-    document.body.style.setProperty('display', 'block', 'important');
-    document.body.style.setProperty('visibility', 'visible', 'important');
+    [document.documentElement, document.body].forEach(function (el) {
+      if (!el) return;
+      el.removeAttribute('hidden');
+      el.style.setProperty('display',     'block',   'important');
+      el.style.setProperty('visibility',  'visible', 'important');
+      el.style.setProperty('opacity',     '1',       'important');
+    });
   }
   forceVisible();
-  new MutationObserver(forceVisible).observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['style'] });
+  // MutationObserver: reagiert auf jede Style/Attribut-Änderung
+  new MutationObserver(forceVisible).observe(document.documentElement, {
+    attributes: true, subtree: true, childList: false
+  });
+  // Interval als letzter Ausweg – gewinnt gegen verzögerte plugins.js-Callbacks
+  setInterval(forceVisible, 80);
   document.addEventListener('DOMContentLoaded', forceVisible);
   window.addEventListener('load', forceVisible);
 }());
