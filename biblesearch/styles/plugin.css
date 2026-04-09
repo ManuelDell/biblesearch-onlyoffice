@@ -1,6 +1,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Sicherstellen dass Body sichtbar ist – plugins.css vom CDN kann
+   visibility:hidden setzen und diese Überschreibung verhindert leere Fenster */
 body {
+    visibility: visible !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
     color: #333;

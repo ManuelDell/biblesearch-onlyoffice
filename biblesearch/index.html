@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>BibleSearch</title>
-  <link rel="stylesheet" href="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.css">
   <link rel="stylesheet" href="styles/plugin.css">
 </head>
 <body>
 <div class="wrap">
 
   <div class="logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="28" height="28" rx="6" fill="#1a73e8"/>
-      <rect x="7" y="6" width="14" height="17" rx="1.5" fill="white" fill-opacity="0.2"/>
-      <rect x="8" y="7" width="12" height="15" rx="1" fill="white"/>
-      <rect x="10" y="11" width="8" height="1.2" rx="0.6" fill="#1a73e8"/>
-      <rect x="10" y="13.5" width="8" height="1.2" rx="0.6" fill="#1a73e8"/>
-      <rect x="10" y="16" width="5" height="1.2" rx="0.6" fill="#1a73e8"/>
-      <rect x="13" y="8.5" width="2" height="4" rx="0.5" fill="#1a73e8" fill-opacity="0.5"/>
+    <!-- Aufgeschlagenes Buch -->
+    <svg width="32" height="28" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Linke Seite -->
+      <path d="M15 4 C13 4 4 5 2 7 L2 25 C4 23 13 22 15 22 Z" fill="#1a73e8"/>
+      <!-- Rechte Seite -->
+      <path d="M17 4 C19 4 28 5 30 7 L30 25 C28 23 19 22 17 22 Z" fill="#1558b0"/>
+      <!-- Buchrücken (Mitte) -->
+      <path d="M15 4 L15 22 M17 4 L17 22" stroke="#0d47a1" stroke-width="1"/>
+      <!-- Schattenband oben -->
+      <path d="M15 4 C15.5 3.5 16.5 3.5 17 4" stroke="#0a3d8f" stroke-width="0.8"/>
+      <!-- Textlinien links -->
+      <line x1="4"  y1="10" x2="13" y2="10" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
+      <line x1="4"  y1="13" x2="13" y2="13" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
+      <line x1="4"  y1="16" x2="13" y2="16" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
+      <line x1="4"  y1="19" x2="10" y2="19" stroke="white" stroke-width="1.2" stroke-opacity="0.5"/>
+      <!-- Textlinien rechts -->
+      <line x1="19" y1="10" x2="28" y2="10" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
+      <line x1="19" y1="13" x2="28" y2="13" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
+      <line x1="19" y1="16" x2="28" y2="16" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
+      <line x1="19" y1="19" x2="25" y2="19" stroke="white" stroke-width="1.2" stroke-opacity="0.4"/>
     </svg>
     <div>
       <h1>BibleSearch</h1>

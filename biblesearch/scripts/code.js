@@ -201,6 +201,9 @@
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
+        // Fenstergröße auf Seitenleisten-Format setzen (Breite × Höhe)
+        window.Asc.plugin.resizeWindow(260, 500, 220, 380, 480, 900);
+
         if (!window._bsReady) {
             window._bsReady = true;
             window.Asc.plugin.createInputHelper();
