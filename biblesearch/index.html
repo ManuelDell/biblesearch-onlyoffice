@@ -8,45 +8,82 @@
 <body>
 <div class="wrap">
 
+  <!-- Logo -->
   <div class="logo">
-    <!-- Aufgeschlagenes Buch -->
-    <svg width="32" height="28" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="34" height="28" viewBox="0 0 34 28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Linke Seite -->
-      <path d="M15 4 C13 4 4 5 2 7 L2 25 C4 23 13 22 15 22 Z" fill="#1a73e8"/>
+      <path d="M16 4 C14 4 4 5.5 2 7.5 L2 25.5 C4 23.5 14 22 16 22 Z" fill="#1a73e8"/>
       <!-- Rechte Seite -->
-      <path d="M17 4 C19 4 28 5 30 7 L30 25 C28 23 19 22 17 22 Z" fill="#1558b0"/>
-      <!-- Buchrücken (Mitte) -->
-      <path d="M15 4 L15 22 M17 4 L17 22" stroke="#0d47a1" stroke-width="1"/>
-      <!-- Schattenband oben -->
-      <path d="M15 4 C15.5 3.5 16.5 3.5 17 4" stroke="#0a3d8f" stroke-width="0.8"/>
+      <path d="M18 4 C20 4 30 5.5 32 7.5 L32 25.5 C30 23.5 20 22 18 22 Z" fill="#1558b0"/>
+      <!-- Buchrücken -->
+      <rect x="15.5" y="3" width="3" height="20" fill="#0d47a1"/>
       <!-- Textlinien links -->
-      <line x1="4"  y1="10" x2="13" y2="10" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
-      <line x1="4"  y1="13" x2="13" y2="13" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
-      <line x1="4"  y1="16" x2="13" y2="16" stroke="white" stroke-width="1.2" stroke-opacity="0.7"/>
-      <line x1="4"  y1="19" x2="10" y2="19" stroke="white" stroke-width="1.2" stroke-opacity="0.5"/>
+      <line x1="4"  y1="10" x2="13" y2="10" stroke="white" stroke-width="1.3" stroke-opacity="0.75"/>
+      <line x1="4"  y1="13.5" x2="13" y2="13.5" stroke="white" stroke-width="1.3" stroke-opacity="0.75"/>
+      <line x1="4"  y1="17" x2="13" y2="17" stroke="white" stroke-width="1.3" stroke-opacity="0.75"/>
+      <line x1="4"  y1="20.5" x2="10" y2="20.5" stroke="white" stroke-width="1.3" stroke-opacity="0.5"/>
       <!-- Textlinien rechts -->
-      <line x1="19" y1="10" x2="28" y2="10" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
-      <line x1="19" y1="13" x2="28" y2="13" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
-      <line x1="19" y1="16" x2="28" y2="16" stroke="white" stroke-width="1.2" stroke-opacity="0.6"/>
-      <line x1="19" y1="19" x2="25" y2="19" stroke="white" stroke-width="1.2" stroke-opacity="0.4"/>
+      <line x1="21" y1="10" x2="30" y2="10" stroke="white" stroke-width="1.3" stroke-opacity="0.6"/>
+      <line x1="21" y1="13.5" x2="30" y2="13.5" stroke="white" stroke-width="1.3" stroke-opacity="0.6"/>
+      <line x1="21" y1="17" x2="30" y2="17" stroke="white" stroke-width="1.3" stroke-opacity="0.6"/>
+      <line x1="21" y1="20.5" x2="27" y2="20.5" stroke="white" stroke-width="1.3" stroke-opacity="0.4"/>
     </svg>
     <div>
       <h1>BibleSearch</h1>
-      <p>Bibelverse per @Referenz einfügen</p>
+      <p>@Referenz tippen → Tab drücken → Vers einfügen</p>
     </div>
   </div>
 
+  <!-- ── Aktivierung ──────────────────────────────────── -->
+  <div class="section activate-box" id="activateBox">
+    <div class="toggle-row">
+      <label class="toggle" for="enabled">
+        <input type="checkbox" id="enabled">
+        <span class="track"><span class="thumb"></span></span>
+      </label>
+      <div>
+        <div class="toggle-label">Inline-Einfügung</div>
+        <div class="toggle-sub" id="toggleSub">Deaktiviert</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Ablauf ───────────────────────────────────────── -->
   <div class="section">
-    <h2>Verwendung</h2>
+    <h2>So funktioniert es</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="flow-num">1</span>
+        <span>Im Dokument <code>@Joh3:16</code> tippen</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">2</span>
+        <span>Vorschlag erscheint – <kbd>Tab</kbd> oder <kbd>↵</kbd> drücken</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">3</span>
+        <span>Vers wird inline eingefügt</span>
+      </div>
+    </div>
+    <div class="example-out">
+      <span class="example-out-label">Beispiel-Ausgabe:</span><br>
+      Also hat Gott die Welt geliebt … (Johannes 3:16)
+    </div>
+  </div>
+
+  <!-- ── Kürzel ───────────────────────────────────────── -->
+  <div class="section">
+    <h2>Referenz-Beispiele</h2>
     <ul class="examples">
-      <li><code>@Joh3:16</code>    <span>Einzelner Vers</span></li>
-      <li><code>@1Mo1:1-3</code>   <span>Versbereich</span></li>
-      <li><code>@Ps23:1</code>     <span>Psalm</span></li>
-      <li><code>@Offb22:20</code>  <span>Letztes Buch</span></li>
-      <li><code>@Mt5:3-12</code>   <span>Seligpreisungen</span></li>
+      <li><code>@Joh3:16</code>     <span>Einzelner Vers</span></li>
+      <li><code>@1Mo1:1-3</code>    <span>Versbereich (3 Verse)</span></li>
+      <li><code>@Ps23</code>        <span>Ganzes Kapitel</span></li>
+      <li><code>@1.Mose1:1</code>   <span>Langform mit Punkt</span></li>
+      <li><code>@Mt5:3-12</code>    <span>Seligpreisungen</span></li>
     </ul>
   </div>
 
+  <!-- ── Einstellungen ───────────────────────────────── -->
   <div class="section">
     <h2>Einstellungen</h2>
 
@@ -58,41 +95,64 @@
       <option value="web">World English Bible (Englisch)</option>
     </select>
 
-    <label for="fmt">Ausgabeformat</label>
-    <select id="fmt">
-      <option value="with_ref">Verstext + Bibelstelle</option>
-      <option value="text_only">Nur Verstext</option>
-      <option value="with_source">Verstext + Stelle + Übersetzung</option>
+    <label for="linebreaks">Versformat</label>
+    <select id="linebreaks">
+      <option value="prose">Fließtext – alle Verse in einer Zeile</option>
+      <option value="lines">Zeilenweise – jeder Vers eigene Zeile</option>
     </select>
 
-    <button class="save" id="saveBtn">Speichern</button>
-    <p class="saved" id="savedMsg"></p>
+    <label for="fmt">Ausgabe</label>
+    <select id="fmt">
+      <option value="with_ref">Verstext + Bibelstelle in Klammern</option>
+      <option value="text_only">Nur Verstext (ohne Bibelstelle)</option>
+      <option value="with_source">Verstext + Stelle + Übersetzungsname</option>
+    </select>
+
+    <button class="btn-save" id="saveBtn">Speichern</button>
+    <p class="saved-msg" id="savedMsg"></p>
   </div>
 
 </div>
 
 <script src="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.js"></script>
-<script src="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins-ui.js"></script>
 <script src="scripts/code.js"></script>
 <script>
-  // Einstellungen laden und speichern (läuft im selben iframe wie code.js)
-  (function () {
-    var trlEl  = document.getElementById('trl');
-    var fmtEl  = document.getElementById('fmt');
-    var btn    = document.getElementById('saveBtn');
-    var msg    = document.getElementById('savedMsg');
+(function () {
+  var enabledEl   = document.getElementById('enabled');
+  var toggleSub   = document.getElementById('toggleSub');
+  var trlEl       = document.getElementById('trl');
+  var lbEl        = document.getElementById('linebreaks');
+  var fmtEl       = document.getElementById('fmt');
+  var saveBtn     = document.getElementById('saveBtn');
+  var savedMsg    = document.getElementById('savedMsg');
 
-    // Gespeicherte Werte laden
-    trlEl.value = localStorage.getItem('bs_translation') || 'delut';
-    fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
+  // Gespeicherte Werte laden
+  var isEnabled = localStorage.getItem('bs_enabled') === '1';
+  enabledEl.checked = isEnabled;
+  toggleSub.textContent = isEnabled ? 'Aktiviert' : 'Deaktiviert';
+  toggleSub.className = 'toggle-sub' + (isEnabled ? ' on' : '');
 
-    btn.addEventListener('click', function () {
-      localStorage.setItem('bs_translation', trlEl.value);
-      localStorage.setItem('bs_format',      fmtEl.value);
-      msg.textContent = '✓ Gespeichert';
-      setTimeout(function () { msg.textContent = ''; }, 2000);
-    });
-  }());
+  trlEl.value = localStorage.getItem('bs_translation') || 'delut';
+  lbEl.value  = localStorage.getItem('bs_linebreaks')  || 'prose';
+  fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
+
+  // Toggle sofort speichern (kein Klick auf Speichern nötig)
+  enabledEl.addEventListener('change', function () {
+    var val = this.checked ? '1' : '0';
+    localStorage.setItem('bs_enabled', val);
+    toggleSub.textContent = this.checked ? 'Aktiviert' : 'Deaktiviert';
+    toggleSub.className = 'toggle-sub' + (this.checked ? ' on' : '');
+  });
+
+  // Übrige Einstellungen mit Speichern-Knopf
+  saveBtn.addEventListener('click', function () {
+    localStorage.setItem('bs_translation', trlEl.value);
+    localStorage.setItem('bs_linebreaks',  lbEl.value);
+    localStorage.setItem('bs_format',      fmtEl.value);
+    savedMsg.textContent = '✓ Gespeichert';
+    setTimeout(function () { savedMsg.textContent = ''; }, 2000);
+  });
+}());
 </script>
 </body>
 </html>

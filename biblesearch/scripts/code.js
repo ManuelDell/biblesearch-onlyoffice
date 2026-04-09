@@ -1,11 +1,12 @@
 /* BibleSearch – OnlyOffice Plugin
- * Tippe @Buch Kapitel:Vers im Dokument, z.B. @Joh3:16 oder @1Mo1:1-3
+ * Tippe @Buch Kapitel:Vers und drücke Tab um den Vers inline einzufügen.
+ * Aktivierung: Plugin-Panel öffnen → Toggle einschalten.
  * API: https://api.getbible.net/v2/{übersetzung}/{buch}/{kapitel}.json
  */
 (function () {
     'use strict';
 
-    // ── Bücher: Kürzel → Buch-Nummer 1–66 ─────────────────────────────────
+    // ── Bücher: Kürzel → Nummer 1–66 ──────────────────────────────────────
     const BOOKS = {
         // Altes Testament
         '1mo':1,'1mos':1,'1mose':1,'gen':1,'genesis':1,
@@ -95,72 +96,106 @@
         '3. Johannes','Judas','Offenbarung',
     ];
 
-    // ── Hilfsfunktionen ───────────────────────────────────────────────────
+    // ── Einstellungen ─────────────────────────────────────────────────────
 
-    function getSetting(key, fallback) {
-        return localStorage.getItem('bs_' + key) || fallback;
-    }
+    function isEnabled()      { return localStorage.getItem('bs_enabled')     === '1'; }
+    function getTranslation() { return localStorage.getItem('bs_translation') || 'delut'; }
+    function getFormat()      { return localStorage.getItem('bs_format')      || 'with_ref'; }
+    function getLineBreaks()  { return localStorage.getItem('bs_linebreaks')  || 'prose'; }
 
-    // Referenz parsen: "Joh3:16" / "1Mo1:1-3" / "Ps23"
+    // ── Referenz-Parser ───────────────────────────────────────────────────
+    // Erkennt: "Joh3:16"  "1Mo1:1-3"  "Ps23"  "1.Mose1:1"
+
     function parseRef(raw) {
-        // Punkte entfernen (1.Mose → 1Mose), dann match
-        const clean = raw.replace(/\./g, '');
+        const clean = raw.replace(/\./g, '');   // "1.Mose" → "1Mose"
         const m = /^(\d*[a-zA-ZäöüÄÖÜß]+)(\d+)(?::(\d+)(?:-(\d+))?)?$/i.exec(clean);
         if (!m) return null;
 
-        const key = m[1].toLowerCase();
-        const num = BOOKS[key];
+        const num = BOOKS[m[1].toLowerCase()];
         if (!num) return null;
 
         return {
             num,
             name: NAMES[num - 1],
-            ch: parseInt(m[2], 10),
-            vs:  m[3] ? parseInt(m[3], 10) : null,
-            ve:  m[4] ? parseInt(m[4], 10) : null,
+            ch:   parseInt(m[2], 10),
+            vs:   m[3] ? parseInt(m[3], 10) : null,
+            ve:   m[4] ? parseInt(m[4], 10) : null,
         };
     }
 
-    // Verse aus API-Antwort (Array oder Objekt) als sortiertes Array holen
-    function toVerseArray(chapterData) {
-        const v = chapterData.verses;
+    // ── Vers-Hilfsfunktionen ──────────────────────────────────────────────
+
+    function toVerseArray(data) {
+        const v = data.verses;
         const arr = Array.isArray(v) ? v : Object.values(v || {});
         return arr.sort((a, b) => (a.verse || 0) - (b.verse || 0));
     }
 
-    // Versbereich filtern, automatisch auf Kapitelende kappen
     function filterVerses(all, vs, ve) {
         if (vs === null) return all;
-        const end = ve !== null ? Math.min(ve, all[all.length - 1]?.verse ?? ve) : vs;
+        const maxV = all[all.length - 1]?.verse ?? vs;
+        const end  = ve !== null ? Math.min(ve, maxV) : vs;
         return all.filter(v => v.verse >= vs && v.verse <= end);
     }
 
-    // Zitationsstring bauen (mit tatsächlichem Versbereich nach Kappung)
     function buildCitation(p, verses) {
         const v0 = verses[0].verse;
         const vN = verses[verses.length - 1].verse;
-        if (p.vs === null)      return `${p.name} ${p.ch}`;
-        if (v0 === vN)          return `${p.name} ${p.ch}:${v0}`;
+        if (p.vs === null) return `${p.name} ${p.ch}`;
+        if (v0 === vN)     return `${p.name} ${p.ch}:${v0}`;
         return `${p.name} ${p.ch}:${v0}–${vN}`;
     }
 
-    // Endtext nach Format-Einstellung zusammenbauen
-    function buildInsertText(citation, verseText) {
-        const fmt = getSetting('format', 'with_ref');
-        if (fmt === 'text_only')  return verseText;
-        if (fmt === 'with_source') {
-            const trl = getSetting('translation', 'delut').toUpperCase();
-            return `${verseText} (${citation}, ${trl})`;
+    // Gibt { insert, method } zurück:
+    //   method = 'PasteText' für Fließtext
+    //   method = 'PasteHtml' für zeilenweise (damit Umbrüche ins Dokument kommen)
+    function buildPending(citation, verses) {
+        const fmt       = getFormat();
+        const lineBreak = getLineBreaks() === 'lines';
+
+        // Fußnote / Quellenangabe
+        let cite = '';
+        if (fmt === 'with_ref')    cite = ` (${citation})`;
+        if (fmt === 'with_source') cite = ` (${citation}, ${getTranslation().toUpperCase()})`;
+
+        if (!lineBreak || verses.length === 1) {
+            // ── Fließtext ──────────────────────────────────────────────
+            const text = verses.map(v => v.text.trim()).join(' ');
+            return { insert: text + cite, method: 'PasteText' };
         }
-        return `${verseText} (${citation})`;
+
+        // ── Zeilenweise (HTML mit <br>) ────────────────────────────────
+        // Jeder Vers bekommt seine eigene Zeile mit vorangestellter Versnummer
+        const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+        const lines = verses
+            .map(v => `<b>${v.verse}</b>\u00a0${esc(v.text.trim())}`)
+            .join('<br>');
+
+        // Quellenangabe in der letzten Zeile kursiv
+        const citeHtml = cite
+            ? `<br><i>${esc(cite.trim().replace(/^\(|\)$/g,''))}</i>`  // "(Joh 3:16)" → kursiv
+            : '';
+
+        return { insert: lines + citeHtml, method: 'PasteHtml' };
     }
 
-    // ── Plugin-Zustand ────────────────────────────────────────────────────
+    // ── Zustand ───────────────────────────────────────────────────────────
 
-    const cache   = {};       // API-Antworten zwischenspeichern
-    let   pending = null;     // { insert: '...' } für aktuellen Vorschlag
-    let   refText = '';       // zuletzt empfangener "@..." Text
+    const cache   = {};
+    let   pending = null;   // { insert, method }
+    let   refText = '';     // zuletzt empfangenes "@..." Wort
     let   timer   = null;
+
+    // ── API ───────────────────────────────────────────────────────────────
+
+    async function fetchChapter(trl, bookNum, ch) {
+        const key = `${trl}/${bookNum}/${ch}`;
+        if (cache[key]) return cache[key];
+        const res = await fetch(`https://api.getbible.net/v2/${key}.json`).catch(() => null);
+        if (!res || !res.ok) return null;
+        return (cache[key] = await res.json());
+    }
 
     // ── Kern-Logik ────────────────────────────────────────────────────────
 
@@ -168,40 +203,34 @@
         const p = parseRef(query);
         if (!p) return hide();
 
-        const trl = getSetting('translation', 'delut');
-        const url = `https://api.getbible.net/v2/${trl}/${p.num}/${p.ch}.json`;
+        const data = await fetchChapter(getTranslation(), p.num, p.ch);
+        if (!data) return hide();
 
-        if (!cache[url]) {
-            const res = await fetch(url).catch(() => null);
-            if (!res || !res.ok) return hide();
-            cache[url] = await res.json();
-        }
-
-        const all     = toVerseArray(cache[url]);
-        const verses  = filterVerses(all, p.vs, p.ve);
+        const all    = toVerseArray(data);
+        const verses = filterVerses(all, p.vs, p.ve);
         if (!verses.length) return hide();
 
-        const citation   = buildCitation(p, verses);
-        const verseText  = verses.map(v => v.text.trim()).join(' ');
-        const insertText = buildInsertText(citation, verseText);
+        const citation = buildCitation(p, verses);
 
-        // Vorschau im Dropdown
-        const preview = verseText.length > 65 ? verseText.slice(0, 65) + '…' : verseText;
+        // Vorschau im Dropdown (einzeiliger Hinweis)
+        const preview = verses[0].text.trim();
+        const label   = `${citation}  –  ${preview.length > 60 ? preview.slice(0, 60) + '…' : preview}`;
 
-        pending = { insert: insertText };
+        pending = buildPending(citation, verses);
+
         const h = window.Asc.plugin.getInputHelper();
-        h.setItems([{ text: `${citation}  –  ${preview}`, id: '0' }]);
+        h.setItems([{ text: label, id: '0' }]);
         h.show(500, h.getItemsHeight(1), true);
     }
 
     function hide() {
+        pending = null;
         window.Asc.plugin.getInputHelper().show(0, 0, false);
     }
 
     // ── Plugin-Hooks ──────────────────────────────────────────────────────
 
     window.Asc.plugin.init = function () {
-        // Fenstergröße auf Seitenleisten-Format setzen (Breite × Höhe)
         window.Asc.plugin.resizeWindow(260, 500, 220, 380, 480, 900);
 
         if (!window._bsReady) {
@@ -215,8 +244,11 @@
         window.Asc.plugin.executeCommand('close', '');
     };
 
-    // Feuert bei jedem Tastendruck im Dokument (Text = aktuelles "Wort" am Cursor)
+    // Feuert bei jedem Tastendruck (text = aktuelles Wort am Cursor)
     window.Asc.plugin.onInputHelperInput = function (text) {
+        // Nicht aktiv → nichts tun
+        if (!isEnabled()) return;
+
         refText = text || '';
         clearTimeout(timer);
 
@@ -225,14 +257,19 @@
             return;
         }
 
+        // Debounce: erst nach 280 ms ohne weiteren Tastendruck fetchen
         timer = setTimeout(() => lookup(refText.slice(1)), 280);
     };
 
-    // Nutzer wählt Vorschlag → @Referenz löschen, Verstext einfügen
+    // Tab / Enter → @Referenz löschen und Verstext einfügen
     window.Asc.plugin.inputHelper_onSelectItem = function () {
         if (!pending || !refText) return;
-        window.Asc.plugin.executeMethod('DeleteTextOnLeft', [refText.length], function () {
-            window.Asc.plugin.executeMethod('PasteText', [pending.insert]);
+
+        const { insert, method } = pending;
+        const deleteLen = refText.length;
+
+        window.Asc.plugin.executeMethod('DeleteTextOnLeft', [deleteLen], function () {
+            window.Asc.plugin.executeMethod(method, [insert]);
         });
     };
 
