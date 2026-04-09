@@ -11,6 +11,7 @@
       "icons": ["resources/img/icon.png", "resources/img/icon@2x.png"],
       "isViewer": false,
       "EditorsSupport": ["word"],
+      "type": "panelRight",
       "isVisual": true,
       "isModal": false,
       "isInsideMode": true,
