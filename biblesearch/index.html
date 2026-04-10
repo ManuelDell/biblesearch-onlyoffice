@@ -31,8 +31,10 @@
     <div class="bs-section" style="margin-top:10px;">
       <span class="defaultlable bs-label">Bibelübersetzung</span>
       <select id="trl" class="form-control">
-        <option value="luther1912">Luther 1912 (Deutsch)</option>
+        <option value="luther1545">Luther 1545 (Deutsch)</option>
         <option value="elberfelder1905">Elberfelder 1905 (Deutsch)</option>
+        <option value="elberfelder">Elberfelder 1871 (Deutsch)</option>
+        <option value="schlachter">Schlachter 1951 (Deutsch)</option>
         <option value="kjv">King James Version (Englisch)</option>
         <option value="web">World English Bible (Englisch)</option>
       </select>
@@ -85,7 +87,7 @@
       var on = localStorage.getItem('bs_enabled') === '1';
       enabledEl.checked = on;
       toggleSub.textContent = on ? 'Aktiviert' : 'Deaktiviert';
-      trlEl.value = localStorage.getItem('bs_translation') || 'delut';
+      trlEl.value = localStorage.getItem('bs_translation') || 'luther1545';
       lbEl.value  = localStorage.getItem('bs_linebreaks')  || 'prose';
       fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
 
