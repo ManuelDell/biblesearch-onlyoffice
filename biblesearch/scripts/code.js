@@ -240,10 +240,17 @@
         //    Body mit ih_area überschreiben; das muss vor unserem UI passieren.
         if (!window._bsReady) {
             window._bsReady = true;
-            try {
-                window.Asc.plugin.createInputHelper();
-                window.Asc.plugin.getInputHelper().createWindow();
-            } catch (e) { /* InputHelper nicht verfügbar – kein Fehler */ }
+            if (typeof window.Asc.plugin.createInputHelper === 'function') {
+                try {
+                    window.Asc.plugin.createInputHelper();
+                    window.Asc.plugin.getInputHelper().createWindow();
+                    console.log('[BS] InputHelper bereit');
+                } catch (e) {
+                    console.error('[BS] InputHelper Fehler:', e.message);
+                }
+            } else {
+                console.warn('[BS] createInputHelper nicht verfügbar');
+            }
         }
 
         // 2. UI NACH createWindow() einfügen (createElement + insertBefore,

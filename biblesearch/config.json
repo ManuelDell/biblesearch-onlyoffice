@@ -10,7 +10,7 @@
       "EditorsSupport": ["word"],
       "isVisual": true,
       "isModal": false,
-      "isInsideMode": true,
+      "isInsideMode": false,
       "initDataType": "none",
       "initData": "",
       "isUpdateOleOnResize": false,
