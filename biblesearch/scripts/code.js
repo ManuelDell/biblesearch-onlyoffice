@@ -344,12 +344,23 @@
         window.Asc.plugin.executeCommand('close', '');
     };
 
-    // Feuert bei jedem Tastendruck (text = aktuelles Wort am Cursor)
-    // Wird über attachEditorEvent UND direkten Callback unterstützt.
     function handleInputHelperInput(text) {
         if (!isEnabled()) return;
 
-        refText = text || '';
+        // text kann String oder Objekt sein – einmal loggen für Diagnose
+        if (!window._bsInputLogged) {
+            window._bsInputLogged = true;
+            console.log('[BS] onInputHelperInput format:', typeof text, JSON.stringify(text).slice(0, 120));
+        }
+
+        // Normalisieren: String, {text:…}, {data:…}, oder Fallback ''
+        var str = typeof text === 'string' ? text
+                : (text && typeof text.text  === 'string') ? text.text
+                : (text && typeof text.data  === 'string') ? text.data
+                : (text && typeof text.value === 'string') ? text.value
+                : '';
+
+        refText = str;
         clearTimeout(timer);
 
         if (!refText.startsWith('@') || refText.length < 3) {
@@ -357,7 +368,6 @@
             return;
         }
 
-        // Debounce: erst nach 280 ms ohne weiteren Tastendruck fetchen
         timer = setTimeout(function () { lookup(refText.slice(1)); }, 280);
     }
 
