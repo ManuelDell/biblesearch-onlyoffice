@@ -104,7 +104,7 @@
     // ── Einstellungen ─────────────────────────────────────────────────────
 
     function isEnabled()      { return localStorage.getItem('bs_enabled')     === '1'; }
-    function getTranslation() { return localStorage.getItem('bs_translation') || 'delut'; }
+    function getTranslation() { return localStorage.getItem('bs_translation') || 'luther1912'; }
     function getFormat()      { return localStorage.getItem('bs_format')      || 'with_ref'; }
     function getLineBreaks()  { return localStorage.getItem('bs_linebreaks')  || 'prose'; }
 
@@ -276,8 +276,8 @@
                 '<div class="bs-section" style="margin-top:10px;">',
                 '  <span class="defaultlable bs-label">Bibelübersetzung</span>',
                 '  <select id="trl" class="form-control">',
-                '    <option value="delut">Luther 1912 (Deutsch)</option>',
-                '    <option value="elb1905">Elberfelder 1905 (Deutsch)</option>',
+                '    <option value="luther1912">Luther 1912 (Deutsch)</option>',
+                '    <option value="elberfelder1905">Elberfelder 1905 (Deutsch)</option>',
                 '    <option value="kjv">King James Version (Englisch)</option>',
                 '    <option value="web">World English Bible (Englisch)</option>',
                 '  </select>',
@@ -322,7 +322,7 @@
             var on = localStorage.getItem('bs_enabled') === '1';
             enabledEl.checked = on;
             toggleSub.textContent = on ? 'Aktiviert' : 'Deaktiviert';
-            trlEl.value = localStorage.getItem('bs_translation') || 'delut';
+            trlEl.value = localStorage.getItem('bs_translation') || 'luther1912';
             lbEl.value  = localStorage.getItem('bs_linebreaks')  || 'prose';
             fmtEl.value = localStorage.getItem('bs_format')      || 'with_ref';
 
