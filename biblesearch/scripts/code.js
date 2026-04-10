@@ -240,6 +240,7 @@
         //    Body mit ih_area überschreiben; das muss vor unserem UI passieren.
         if (!window._bsReady) {
             window._bsReady = true;
+            // InputHelper DOM aufbauen
             if (typeof window.Asc.plugin.createInputHelper === 'function') {
                 try {
                     window.Asc.plugin.createInputHelper();
@@ -248,8 +249,12 @@
                 } catch (e) {
                     console.error('[BS] InputHelper Fehler:', e.message);
                 }
-            } else {
-                console.warn('[BS] createInputHelper nicht verfügbar');
+            }
+            // Desktop über attachEditorEvent für Input-Events registrieren
+            if (typeof window.Asc.plugin.attachEditorEvent === 'function') {
+                // onInputHelperInput: Desktop sendet aktuelles Wort am Cursor
+                window.Asc.plugin.attachEditorEvent('onInputHelperInput', handleInputHelperInput);
+                console.log('[BS] attachEditorEvent onInputHelperInput registriert');
             }
         }
 
@@ -340,8 +345,8 @@
     };
 
     // Feuert bei jedem Tastendruck (text = aktuelles Wort am Cursor)
-    window.Asc.plugin.onInputHelperInput = function (text) {
-        // Nicht aktiv → nichts tun
+    // Wird über attachEditorEvent UND direkten Callback unterstützt.
+    function handleInputHelperInput(text) {
         if (!isEnabled()) return;
 
         refText = text || '';
@@ -353,8 +358,11 @@
         }
 
         // Debounce: erst nach 280 ms ohne weiteren Tastendruck fetchen
-        timer = setTimeout(() => lookup(refText.slice(1)), 280);
-    };
+        timer = setTimeout(function () { lookup(refText.slice(1)); }, 280);
+    }
+
+    // Legacy: Desktop ruft onInputHelperInput direkt auf (ältere Versionen)
+    window.Asc.plugin.onInputHelperInput = handleInputHelperInput;
 
     // Tab / Enter → @Referenz löschen und Verstext einfügen
     window.Asc.plugin.inputHelper_onSelectItem = function () {
