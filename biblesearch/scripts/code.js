@@ -205,17 +205,24 @@
     // ── Kern-Logik ────────────────────────────────────────────────────────
 
     async function lookup(query) {
+        console.log('[BS] lookup:', query);
         const p = parseRef(query);
-        if (!p) return hide();
+        if (!p) { console.log('[BS] parseRef fehlgeschlagen für:', query); return hide(); }
+        console.log('[BS] parsed:', JSON.stringify(p));
 
-        const data = await fetchChapter(getTranslation(), p.num, p.ch);
-        if (!data) return hide();
+        const trl  = getTranslation();
+        const url  = `https://api.getbible.net/v2/${trl}/${p.num}/${p.ch}.json`;
+        console.log('[BS] fetch:', url);
+
+        const data = await fetchChapter(trl, p.num, p.ch);
+        if (!data) { console.log('[BS] API fehlgeschlagen / kein Ergebnis'); return hide(); }
 
         const all    = toVerseArray(data);
         const verses = filterVerses(all, p.vs, p.ve);
-        if (!verses.length) return hide();
+        if (!verses.length) { console.log('[BS] keine Verse gefunden'); return hide(); }
 
         const citation = buildCitation(p, verses);
+        console.log('[BS] citation:', citation, '– Verse:', verses.length);
 
         // Vorschau im Dropdown (einzeiliger Hinweis)
         const preview = verses[0].text.trim();
@@ -225,6 +232,7 @@
 
         const h = window.Asc.plugin.getInputHelper();
         h.setItems([{ text: label, id: '0' }]);
+        console.log('[BS] show dropdown, itemsHeight:', h.getItemsHeight(1));
         h.show(500, h.getItemsHeight(1), true);
     }
 
@@ -349,12 +357,6 @@
     function handleInputHelperInput(text) {
         if (!isEnabled()) return;
 
-        // text kann String oder Objekt sein – einmal loggen für Diagnose
-        if (!window._bsInputLogged) {
-            window._bsInputLogged = true;
-            console.log('[BS] onInputHelperInput format:', typeof text, JSON.stringify(text).slice(0, 120));
-        }
-
         // Normalisieren: String, {text:…}, {data:…}, oder Fallback ''
         var str = typeof text === 'string' ? text
                 : (text && typeof text.text  === 'string') ? text.text
@@ -362,10 +364,13 @@
                 : (text && typeof text.value === 'string') ? text.value
                 : '';
 
+        console.log('[BS] input:', JSON.stringify(str));
+
         refText = str;
         clearTimeout(timer);
 
         if (!refText.startsWith('@') || refText.length < 3) {
+            if (refText.startsWith('@')) console.log('[BS] zu kurz, hide');
             hide();
             return;
         }
@@ -377,11 +382,13 @@
     window.Asc.plugin.onInputHelperInput = handleInputHelperInput;
 
     // Tab / Enter → @Referenz löschen und Verstext einfügen
-    window.Asc.plugin.inputHelper_onSelectItem = function () {
+    window.Asc.plugin.inputHelper_onSelectItem = function (item) {
+        console.log('[BS] inputHelper_onSelectItem aufgerufen, pending:', !!pending, 'refText:', refText);
         if (!pending || !refText) return;
 
         const { insert, method } = pending;
         const deleteLen = refText.length;
+        console.log('[BS] insert via', method, '– deleteLen:', deleteLen, '– text:', insert.slice(0, 80));
 
         window.Asc.plugin.executeMethod('DeleteTextOnLeft', [deleteLen], function () {
             window.Asc.plugin.executeMethod(method, [insert]);
